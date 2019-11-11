@@ -69,7 +69,8 @@ class MicArray:
         in_mics = []
         with open(filename) as f:
             in_mics = json.load(f)
-        self.mics = [self.add_mic_from_dict(mic) for mic in in_mics]
+        for mic in in_mics:
+            self.add_mic_from_dict(mic)
 
     def record(self):
         if not os.path.exists(self.output_folder):
