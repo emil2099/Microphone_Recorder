@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    m = MicArray(threshold=args.threshold)
+    m = MicArray(threshold=int(args.threshold))
     if args.config:
         m.load_from_file(args.config)
     else:
