@@ -75,7 +75,7 @@ class MicArray:
         if not os.path.exists(self.output_folder):
                 os.makedirs(self.output_folder)
 
-        mic1 = self.mics[1]
+        mic1 = self.mics[0]
         print('Starting listening')
         self.running_status = True
         while True:
@@ -112,8 +112,8 @@ class MicArray:
                 self.p.terminate()
                 self.running_status = False
 
-            except:
-                self.running_status = False
+            # except:
+            #     self.running_status = False
 
     def _print_mics(self):
         print('The following microphones have been detected and added:')

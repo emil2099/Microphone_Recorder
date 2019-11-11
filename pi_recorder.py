@@ -18,6 +18,7 @@ if __name__ == '__main__':
     else:
         m.detect_mics()
 
+    time.sleep(0.5)
     x = threading.Thread(target=m.record, daemon=True)
     x.start()
     while True:
