@@ -9,7 +9,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Raspberry Pi microphone recorder')
     parser.add_argument("--config", help='Optional json config file to use for microphones')
-    parser.add_argument("--threshold", default=10, help='Detection threshold')
+    parser.add_argument("--threshold", default=20, help='Detection threshold')
 
     args = parser.parse_args()
 

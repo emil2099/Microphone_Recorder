@@ -84,7 +84,8 @@ class MicArray:
                 now = time.time()
                 if not mic1.recording_status:
                     avg_rms = mic1.average_rms()
-                    if mic1.rms - self.threshold > avg_rms:
+                    if avg_rms > self.threshold:
+                    # if mic1.rms - self.threshold > avg_rms:
                         print(f'Triggered by RMS: {mic1.rms}. Average RMS: {avg_rms}')
                         self.recording_status = True
                         for mic in self.mics:
@@ -92,7 +93,8 @@ class MicArray:
                         end = now + self.timeout_length
 
                 if mic1.recording_status:
-                    if mic1.rms - self.threshold > avg_rms: end = now + self.timeout_length
+                    avg_rms = mic1.average_rms()
+                    if avg_rms > self.threshold: end = now + self.timeout_length
 
                     if now > end:
                         time_str = time.strftime("%Y%m%d_%H%M%S")
@@ -137,7 +139,7 @@ class MicArray:
 
 class Microphone:
     def __init__(self, input_device_index, format, channels, rate, name=str(uuid.uuid1()),
-                 frames_per_buffer=1024, prepend_length=0, rms_points=50):
+                 frames_per_buffer=1024, prepend_length=0, rms_points=100):
 
         self.p = pyaudio.PyAudio()
 
@@ -213,17 +215,17 @@ class Microphone:
         for sample in shorts:
             n = sample * SHORT_NORMALIZE
             sum_squares += n * n
-        self.rms = math.pow(sum_squares / count, 0.5) * 1000
+        self.rms = min([math.pow(sum_squares / count, 0.5) * 1000, 100])
 
     def average_rms(self):
         try:
-            avg = sum(self.rms_history) // len(self.rms_history)
+            avg = sum(self.rms_history) / len(self.rms_history)
         except ZeroDivisionError:
             avg = 0
         return avg
 
 
 if __name__ == '__main__':
-    m = MicArray(threshold=7)
+    m = MicArray(threshold=15)
     m.detect_mics()
     m.record()
