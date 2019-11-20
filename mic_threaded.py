@@ -13,6 +13,7 @@ class MicArray:
         print('Initialised')
         self.p = pyaudio.PyAudio() #TODO Delete duplication of pyaudio instances - can be top level.
         self.mics = []
+        self.prime_mic = None
         self.prepend_length = prepend_length
         self.timeout_length = timeout_length
         self.threshold = threshold
@@ -72,11 +73,18 @@ class MicArray:
         for mic in in_mics:
             self.add_mic_from_dict(mic)
 
+    def detect_prime(self):
+        self.prime_mic = max(self.mics, key=lambda x: x.average_rms())
+
     def record(self):
         if not os.path.exists(self.output_folder):
                 os.makedirs(self.output_folder)
 
-        mic1 = self.mics[0]
+        if self.prime_mic is None:
+            mic1 = self.mics[0]
+        else:
+            mic1 = self.prime_mic
+
         print('Starting listening')
         self.running_status = True
         while True:
@@ -174,7 +182,7 @@ class Microphone:
 
     def get_callback(self):
         def callback(in_data, frame_count, time_info, status):
-            self.update_rms(in_data)
+            self.rms = self.update_rms(in_data)
             self.rms_history.append(self.rms)
             self.prev_data.append(in_data)
 
@@ -203,7 +211,8 @@ class Microphone:
         wf.close()
         print('Written to file: {}'.format(filepath))
 
-    def update_rms(self, frame):
+    @staticmethod
+    def update_rms(frame):
         SHORT_NORMALIZE = (1.0 / 32768.0)
         SWIDTH = 2
 
@@ -215,7 +224,7 @@ class Microphone:
         for sample in shorts:
             n = sample * SHORT_NORMALIZE
             sum_squares += n * n
-        self.rms = min([math.pow(sum_squares / count, 0.5) * 1000, 100])
+        return min([math.pow(sum_squares / count, 0.5) * 1000, 100])
 
     def average_rms(self):
         try:
