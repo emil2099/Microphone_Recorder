@@ -75,6 +75,7 @@ class MicArray:
 
     def detect_prime(self):
         self.prime_mic = max(self.mics, key=lambda x: x.average_rms())
+        print('Mic calibration: {}'.format(self.prime_mic))
 
     def record(self):
         if not os.path.exists(self.output_folder):
