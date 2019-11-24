@@ -37,7 +37,7 @@ if __name__ == '__main__':
             time.sleep(2)
             m.detect_prime()
             m.running_status = True
-        if m.recording_status:
+        elif m.recording_status:
             pj.status.SetLedState('D2', [0, 255, 0])
         elif m.running_status:
             pj.status.SetLedState('D2', [0, 0, 255])
