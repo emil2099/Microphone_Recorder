@@ -32,13 +32,15 @@ if __name__ == '__main__':
         print('Current running status is: ' + str(m.running_status))
         if pj.status.GetButtonEvents()['data']['SW2'] == 'SINGLE_PRESS':
             pj.status.AcceptButtonEvent('SW2')
-            pj.status.SetLedState('D2', [255,128,0])
+            pj.status.SetLedState('D2', [255, 128, 0])
+            m.running_status = False
             time.sleep(2)
             m.detect_prime()
+            m.running_status = True
         if m.recording_status:
-            pj.status.SetLedState('D2', [0, 255,0])
+            pj.status.SetLedState('D2', [0, 255, 0])
         elif m.running_status:
-            pj.status.SetLedState('D2', [0,0,255])
+            pj.status.SetLedState('D2', [0, 0, 255])
         else:
-            pj.status.SetLedState('D2', [255,0,0])
+            pj.status.SetLedState('D2', [255, 0, 0])
         time.sleep(0.5)

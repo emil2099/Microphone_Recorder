@@ -81,27 +81,27 @@ class MicArray:
                 os.makedirs(self.output_folder)
 
         if self.prime_mic is None:
-            mic1 = self.mics[0]
-        else:
-            mic1 = self.prime_mic
+            self.prime_mic = self.mics[0]
 
         print('Starting listening')
         self.running_status = True
         while True:
+            if not self.running_status:
+                continue
             try:
                 now = time.time()
-                if not mic1.recording_status:
-                    avg_rms = mic1.average_rms()
+                if not self.prime_mic.recording_status:
+                    avg_rms = self.prime_mic.average_rms()
                     if avg_rms > self.threshold:
                     # if mic1.rms - self.threshold > avg_rms:
-                        print(f'Triggered by RMS: {mic1.rms}. Average RMS: {avg_rms}')
+                        print(f'Triggered by RMS: {self.prime_mic.rms}. Average RMS: {avg_rms}')
                         self.recording_status = True
                         for mic in self.mics:
                             mic.start_recording()
                         end = now + self.timeout_length
 
-                if mic1.recording_status:
-                    avg_rms = mic1.average_rms()
+                if self.prime_mic.recording_status:
+                    avg_rms = self.prime_mic.average_rms()
                     if avg_rms > self.threshold: end = now + self.timeout_length
 
                     if now > end:
