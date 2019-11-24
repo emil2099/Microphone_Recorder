@@ -37,6 +37,9 @@ if __name__ == '__main__':
             time.sleep(2)
             m.detect_prime()
             m.running_status = True
+        elif pj.status.GetButtonEvents()['data']['SW3'] == 'SINGLE_PRESS':
+            pj.status.AcceptButtonEvent('SW3')
+            m.running_status = not m.running_status
         elif m.recording_status:
             pj.status.SetLedState('D2', [0, 255, 0])
         elif m.running_status:
