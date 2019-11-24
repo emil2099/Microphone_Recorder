@@ -147,7 +147,7 @@ class MicArray:
 
 class Microphone:
     def __init__(self, input_device_index, format, channels, rate, name=str(uuid.uuid1()),
-                 frames_per_buffer=1024, prepend_length=0, rms_points=100):
+                 frames_per_buffer=1024, prepend_length=0, rms_points=40):
 
         self.p = pyaudio.PyAudio()
 
