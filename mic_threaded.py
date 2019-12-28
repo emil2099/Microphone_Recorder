@@ -91,6 +91,12 @@ class MicArray:
                 continue
             try:
                 now = time.time()
+                text_out = ''
+                for x, m in enumerate(self.mics):
+                    text_out += 'Mic{}: {} '.format(x, m.average_rms())
+
+                print(text_out)
+
                 if not self.prime_mic.recording_status:
                     avg_rms = self.prime_mic.average_rms()
                     if avg_rms > self.threshold:
