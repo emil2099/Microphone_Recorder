@@ -76,6 +76,13 @@ class MicArray:
     def detect_prime(self):
         self.prime_mic = max(self.mics, key=lambda x: x.average_rms())
         print('Mic calibration: {}'.format(self.prime_mic))
+        
+    def check_trigger(self):
+        from statistics import mean
+        rms_average = mean([m.average_rms() for m in self.mics if m is not self.prime_mic])
+        condition = (self.prime_mic.average_rms() - rms_average) >= self.threshold
+        print('Prime: {}, Other: {}, Condition: {}'.format(self.prime_mic.average_rms(), rms_average, condition))
+        return condition
 
     def record(self):
         if not os.path.exists(self.output_folder):
@@ -91,15 +98,16 @@ class MicArray:
                 continue
             try:
                 now = time.time()
-                text_out = ''
-                for x, m in enumerate(self.mics):
-                    text_out += 'Mic{}: {} '.format(x, m.average_rms())
+                # text_out = ''
+                # for x, m in enumerate(self.mics):
+                    # text_out += 'Mic{}: {} '.format(x, m.average_rms())
 
-                print(text_out)
+                # print(text_out)
 
                 if not self.prime_mic.recording_status:
                     avg_rms = self.prime_mic.average_rms()
-                    if avg_rms > self.threshold:
+                    # if avg_rms > self.threshold:
+                    if self.check_trigger():
                     # if mic1.rms - self.threshold > avg_rms:
                         print(f'Triggered by RMS: {self.prime_mic.rms}. Average RMS: {avg_rms}')
                         self.recording_status = True
@@ -108,8 +116,9 @@ class MicArray:
                         end = now + self.timeout_length
 
                 if self.prime_mic.recording_status:
-                    avg_rms = self.prime_mic.average_rms()
-                    if avg_rms > self.threshold: end = now + self.timeout_length
+                    # avg_rms = self.prime_mic.average_rms()
+                    # if avg_rms > self.threshold: end = now + self.timeout_length
+                    if self.check_trigger(): end = now + self.timeout_length
 
                     if now > end:
                         time_str = time.strftime("%Y%m%d_%H%M%S")
